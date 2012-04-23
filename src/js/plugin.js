@@ -40,19 +40,41 @@
 		},
 	};
 	
-	function scanForAttachments(text){
+	function scanForNewAttachments(text){
 		var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
 		var regex = new RegExp(expression);
 		var urls = text.match(regex);
 		var result = {}
 		for(index in urls){
 			if(isNaN(index)) continue;
-			result[urls[index]] = {
-				url: urls[index],
-				title: urls[index],
-			};
+			
+			var url = urls[index];
+			if(! existingAttachments[url]){
+				fetchURL(url, function(details){
+					existingAttachments[url] = details;
+					var form = generateAttachmentForm(details);
+					$(settings.container).append(form);
+				});
+			}
 		}
-		return result;
+	}
+	
+	function fetchURL(url, callback){
+		$.ajax('https://graph.facebook.com/', {
+			data: {
+				ids: url,
+			},
+			dataType: 'jsonp',
+			success: function(data, status, handle){
+				var result = data[url];
+				result['url'] = url;
+				callback(result);
+			},
+			error: function(handle, status, error){
+				console.log(status);
+				console.log(error);
+			}
+		})
 	}
 	
 	function generateAttachmentForm(attachment){
@@ -60,14 +82,7 @@
 	}
 	
 	function fieldChanged(elem, event){
-		var urls = scanForAttachments($(elem).html());
-		for(key in urls){
-			if(! existingAttachments[key]){
-				existingAttachments[key] = urls[key];
-				var form = generateAttachmentForm(urls[key]);
-				$(settings.container).append(form);
-			}
-		}
+		scanForNewAttachments($(elem).html());
 	}
 	
 	$.fn.mediaTextfield = function(method){
