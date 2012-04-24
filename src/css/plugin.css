@@ -1,5 +1,24 @@
 .media-text-area {
 	border: 2px solid black;
-	height: 35px;
-	width: 600px;
+	min-height: 35px;
+	min-width: 600px;
+	padding: 5px;
+}
+
+.attachment {
+	background-color: #ccc;
+	padding: 10px;
+	margin: 10px 0;
+	max-width: 200px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+
+.attachment .close {
+	position: relative;
+	top: -5px;
+	float: right;
+	font-size: 11px;
+	cursor: pointer;
 }

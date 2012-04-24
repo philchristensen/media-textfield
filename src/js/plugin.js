@@ -60,25 +60,37 @@
 	}
 	
 	function fetchURL(url, callback){
-		$.ajax('https://graph.facebook.com/', {
-			data: {
-				ids: url,
-			},
-			dataType: 'jsonp',
-			success: function(data, status, handle){
-				var result = data[url];
-				result['url'] = url;
-				callback(result);
-			},
-			error: function(handle, status, error){
-				console.log(status);
-				console.log(error);
-			}
-		})
+		callback({url: url, title: url})
+		// $.ajax('https://graph.facebook.com/', {
+		// 	data: {
+		// 		ids: url,
+		// 	},
+		// 	dataType: 'jsonp',
+		// 	success: function(data, status, handle){
+		// 		var result = data[url];
+		// 		result['url'] = url;
+		// 		if(! result['title']){
+		// 			result['title'] = url;
+		// 		}
+		// 		callback(result);
+		// 	},
+		// 	error: function(handle, status, error){
+		// 		console.log(status);
+		// 		console.log(error);
+		// 	}
+		// })
 	}
 	
 	function generateAttachmentForm(attachment){
-		return $('<div>').attr('class', 'attachment').append($('<a>').attr('href', attachment.url).html(attachment.title));
+		var closeLink = $('<a>').attr('class', "close").html('x');
+		closeLink.click(function(){
+			$(this).parents('.attachment').remove();
+		});
+		
+		var node = $('<div>').attr('class', 'attachment');
+		node.append($('<a>').attr('href', attachment.url).html(attachment.title));
+		node.append(closeLink);
+		return node;
 	}
 	
 	function fieldChanged(elem, event){
